@@ -4,16 +4,20 @@
   "description": "",
   "main": "hello.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1",
-    "build": "sls package",
-    "dev": "sls offline -s dev --reloadHandler"
+    "start": "nodemon ./index.js",
+    "lint": "npx eslint .",
+    "test": "echo \"Error: no test specified\" && exit 1"
   },
   "keywords": [],
   "author": "",
   "license": "ISC",
   "dependencies": {
     "express": "^4.18.2",
-    "mongoose": "^8.2.0",
-    "serverless-offline": "^13.3.3"
+    "mongoose": "^8.1.1",
+    "morgan": "^1.10.0",
+    "nodemon": "^3.0.3"
+  },
+  "devDependencies": {
+    "eslint": "^8.57.0"
   }
 }
