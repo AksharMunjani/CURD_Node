@@ -5,9 +5,9 @@ const router = express.Router();
 const EmployeeController = require("../controllers/EmployeeController");
 
 router.get("/", EmployeeController.index);
-router.post("/show", EmployeeController.show);
+router.get("/show/:id", EmployeeController.show);
 router.post("/store", EmployeeController.store);
-router.post("/update", EmployeeController.update);
-router.post("/destroy", EmployeeController.destroy);
+router.put("/update/:id", EmployeeController.update);
+router.delete("/destroy/:id", EmployeeController.destroy);
 
 module.exports = router;

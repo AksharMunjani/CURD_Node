@@ -3,22 +3,49 @@ const Employee = require("../models/Employee");
 
 // show the list of Employees
 const index = async (req, res) => {
+  const filter = req.query.filter;
+  const sortBy = req.query.sortBy;
+  const order = req.query.order;
+  const page = Number(req.query.page) || 1;
+  const limit = Number(req.query.limit) || 10;
+  const skip = (page - 1) * limit;
+  const sortObj = {};
+  sortObj[sortBy] = order === "asc" ? 1 : -1;
+
   try {
-    const response = await Employee.find();
-    res.json({ response });
+    let query = {};
+
+    if (filter) {
+      const caseInsensitiveFilter = new RegExp(filter, "i");
+      query = {
+        $or: [
+          { name: { $regex: caseInsensitiveFilter } },
+          { designation: { $regex: caseInsensitiveFilter } },
+          { email: { $regex: caseInsensitiveFilter } },
+          { phone: { $regex: caseInsensitiveFilter } },
+        ],
+      };
+    }
+
+    const count = await Employee.countDocuments(query);
+    const totalPages = Math.ceil(count / limit);
+    const employees = await Employee.find(query).sort(sortObj).skip(skip).limit(limit);
+    const paginationData = { employees, page, limit, count, totalPages };
+    res.status(200).json(paginationData);
+    console.log("🚀 ~ index ~ paginationData:", paginationData)
   } catch (error) {
-    res.json({ message: "An error Occured!" });
+    res.status(400).json(error.message);
   }
 };
 
 // Show single employee
 const show = async (req, res) => {
-  let employeeID = req.body.employeeID;
+  let employeeID = req.params.id;
   try {
     const response = await Employee.findById(employeeID);
-    res.json({ response });
+    res.status(200).json(response);
   } catch (error) {
-    res.json({ message: "An error Occured!" });
+    res.status(400).json(error.message);
   }
 };
 
@@ -33,15 +60,15 @@ const store = async (req, res) => {
       age: req.body.age,
     });
     await employee.save();
-    res.json({ message: "Employee Added successfully!" });
+    res.status(200).json(employee);
   } catch (error) {
-    res.json({ message: "An error Occured!" });
+    res.status(400).json(error.message);
   }
 };
 
 //update an employee
 const update = async (req, res) => {
-  let employeeID = req.body.employeeID;
+  let employeeID = req.params.id;
   try {
     let updateData = {
       name: req.body.name,
@@ -51,20 +78,20 @@ const update = async (req, res) => {
       age: req.body.age,
     };
     await Employee.findByIdAndUpdate(employeeID, { $set: updateData });
-    res.json({ message: "Employee Updated successfully!" });
+    res.status(200).json(employeeID);
   } catch (error) {
-    res.json({ message: "An error Occured!" });
+    res.status(400).json(error.message);
   }
 };
 
 // delete an employee
 const destroy = async (req, res) => {
-  let employeeID = req.body.employeeID;
+  let employeeID = req.params.id;
   try {
     await Employee.findByIdAndDelete(employeeID);
-    res.json({ message: "Employee Deleted successfully!" });
+    res.status(200).json({ employeeID });
   } catch (error) {
-    res.json({ message: "An error Occured!" });
+    res.status(400).json(error.message);
   }
 };
 
