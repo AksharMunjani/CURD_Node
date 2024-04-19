@@ -6,6 +6,7 @@ require("dotenv").config();
 
 const EmployeeRoute = require("./router/Employee");
 
+// Database Connection
 mongoose.connect(process.env.MONGO_URL);
 const db = mongoose.connection;
 
@@ -17,9 +18,10 @@ db.once("open", () => {
   console.log("Database Connection Established");
 });
 
+// Express Server
 const app = express();
 
-app.use(cors({ origin: '*' }));
+app.use(cors({ origin: "*" }));
 app.use(express.urlencoded({ extended: true }));
 app.use(express.json());
 

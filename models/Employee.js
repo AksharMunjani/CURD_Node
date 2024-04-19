@@ -2,6 +2,7 @@
 const mongoose = require("mongoose");
 const schema = mongoose.Schema;
 
+// Employee Schema
 const employeeSchema = new schema(
   {
     name: { type: String, required: true },
